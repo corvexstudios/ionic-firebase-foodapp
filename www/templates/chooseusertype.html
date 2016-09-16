@@ -1,10 +1,11 @@
 <ion-view style="" class=" " id="chooseusertype" title="Login">
     <ion-content class="has-header" padding="true" style="background: url(img/bg1.jpg) center; background-size: cover;">
 
-        <div ng-init="user.type='P'">
-                <ion-radio style="color: #ffffff;" ng-model="user.type" ng-value="'V'" >Quero vender comida online (sou um restaurante)</ion-radio>
-                <ion-radio style="color: #ffffff;" ng-model="user.type" ng-value="'P'" checked>Quero pedir comida online (sou um consumidor)</ion-radio>
-            </div>
-
+        <div>
+            <ion-radio style="color: #ffffff;" ng-model="user.type" ng-value="'V'" >Quero vender comida online (sou um restaurante)</ion-radio>
+            <ion-radio style="color: #ffffff;" ng-model="user.type" ng-value="'P'" checked>Quero pedir comida online (sou um consumidor)</ion-radio>
+        </div>
+        
+        <button ng-click="goHome(user)" class=" button button-positive  button-block icon-left ion-android-arrow-forward "  id="signup-button4">CONTINUAR</button>
     </ion-content>
 </ion-view>

@@ -18,12 +18,13 @@ angular.module('app.controllers', [])
 
                     fireBaseData.refUser().on('value', function (snap) {
                         console.log(snap.val());
-                        
-                        snap.forEach(function(item){
+
+                        snap.forEach(function (item) {
                             console.log(item.child('type').val());
                             console.log(item.child('telephone').val());
                         });
                     });
+
 
                     $ionicHistory.nextViewOptions({
                         historyRoot: true
@@ -31,7 +32,19 @@ angular.module('app.controllers', [])
                     $ionicSideMenuDelegate.canDragContent(true);  // Sets up the sideMenu dragable
                     $rootScope.extras = true;
                     sharedUtils.hideLoading();
-                    $state.go('menu2', {}, {location: "replace"}); // Zima - Aqui é pra onde vai depois do login
+
+                    // primeiro login do usuário, então precisa definir o tipo de usuário (vendedor ou comprador)
+                    if (user.type == undefined) {
+                        console.log('entrou aqui');
+                        $state.go('chooseUserType', {myVar: 'Hello Var'}, {localtion: "replace"});
+                        $state.prop1 = 'prop1';
+                        $scope.prop2 = 'prop2';
+                        $rootScope.myFunc = function () {
+                            console.log('Im my func')
+                        };
+                    } else {
+                        $state.go('menu2', {}, {location: "replace"});
+                    }
 
                 }
             });
@@ -649,6 +662,21 @@ angular.module('app.controllers', [])
 
             };
 
+
+        })
+
+        .controller('userTypeCtrl', function ($scope, $rootScope, $state, sharedUtils) {
+
+            firebase.auth().onAuthStateChanged(function (userLogged) {
+                
+                $scope.goHome = function (user) {
+                    if (user.type == undefined) {
+                        sharedUtils.showAlert("Atenção", "Escolha uma opção: vendedor ou comprador");
+                    } else {
+                        $state.go('menu2', {}, {location: "replace"});
+                    }
+                }
+            });
 
         })
 
