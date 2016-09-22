@@ -100,6 +100,18 @@ angular.module('app.routes', [])
       templateUrl: 'templates/chooseusertype.html',
       controller: 'userTypeCtrl'
   })
+  
+    .state('homeRestaurant',{
+        url: 'homerestaurante',
+        templateUrl: 'templates/homeRestaurant.html',
+        controller: 'userTypeCtrl'
+    })
+    
+    .state('homeUser',{
+        url: 'homeusuario',
+        templateUrl: 'templates/homeUser.html',
+        controller: 'userTypeCtrl'
+    })
 
 $urlRouterProvider.otherwise('/page1/page5')
 

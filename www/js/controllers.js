@@ -16,16 +16,7 @@ angular.module('app.controllers', [])
             firebase.auth().onAuthStateChanged(function (user) {
                 if (user) {
 
-                    fireBaseData.refUser().on('value', function (snap) {
-                        console.log(snap.val());
-
-                        snap.forEach(function (item) {
-                            console.log(item.child('type').val());
-                            console.log(item.child('telephone').val());
-                        });
-                    });
-
-
+                    console.log('Usuário do tipo: ' + user.type);
                     $ionicHistory.nextViewOptions({
                         historyRoot: true
                     });
@@ -33,18 +24,42 @@ angular.module('app.controllers', [])
                     $rootScope.extras = true;
                     sharedUtils.hideLoading();
 
-                    // primeiro login do usuário, então precisa definir o tipo de usuário (vendedor ou comprador)
-                    if (user.type == undefined) {
-                        console.log('entrou aqui');
-                        $state.go('chooseUserType', {myVar: 'Hello Var'}, {localtion: "replace"});
-                        $state.prop1 = 'prop1';
-                        $scope.prop2 = 'prop2';
-                        $rootScope.myFunc = function () {
-                            console.log('Im my func')
-                        };
-                    } else {
-                        $state.go('menu2', {}, {location: "replace"});
+                    var userType = user.type != undefined ? user.type : 'undefined';
+                    userType = userType.toLocaleLowerCase();
+
+                    switch (userType) {
+                        case 'v':
+                        { //vendedor
+                            $state.go('homeRestaurant');
+                            console.log('homeRestaurant');
+                            break;
+                        }
+                        case 'p':
+                        {
+                            $state.go('homeUser');
+                            console.log('homeUser');
+                            break;
+                        }
+                        default:
+                        {
+                            console.log('sem tipo de usuário definido');
+                            $state.go('chooseUserType');
+                        }
                     }
+
+
+                    // primeiro login do usuário, então precisa definir o tipo de usuário (vendedor ou comprador)
+//                    if (user.type == undefined) {
+//                        console.log('entrou aqui');
+//                        $state.go('chooseUserType', {myVar: 'Hello Var'}, {localtion: "replace"});
+//                        $state.prop1 = 'prop1';
+//                        $scope.prop2 = 'prop2';
+//                        $rootScope.myFunc = function () {
+//                            console.log('Im my func')
+//                        };
+//                    } else {
+//                        $state.go('menu2', {}, {location: "replace"});
+//                    }
 
                 }
             });
@@ -93,7 +108,7 @@ angular.module('app.controllers', [])
             $scope.loginFb = function () {
                 var provider = new firebase.auth.FacebookAuthProvider();
                 provider.addScope('public_profile');
-
+                console.log('login com FB');
                 firebase.auth().signInWithRedirect(provider);
             };
 
@@ -665,18 +680,48 @@ angular.module('app.controllers', [])
 
         })
 
-        .controller('userTypeCtrl', function ($scope, $rootScope, $state, sharedUtils) {
+        .controller('userTypeCtrl', function ($scope, $rootScope, $state, sharedUtils, fireBaseData) {
 
             firebase.auth().onAuthStateChanged(function (userLogged) {
                 
-                $scope.goHome = function (user) {
-                    if (user.type == undefined) {
-                        sharedUtils.showAlert("Atenção", "Escolha uma opção: vendedor ou comprador");
-                    } else {
-                        $state.go('menu2', {}, {location: "replace"});
-                    }
-                }
             });
+
+            $scope.goHome = function (user) {
+                if (user.type == undefined) {
+                    sharedUtils.showAlert("Atenção", "Escolha uma opção: vendedor ou comprador");
+                } else {
+                    var userType = user.type != undefined ? user.type : 'undefined';
+                    userType = userType.toLocaleLowerCase();
+
+                    switch (userType) {
+                        case 'v':
+                        { //vendedor
+                            $state.go('homeRestaurant');
+                            console.log('homeRestaurant');
+                            break;
+                        }
+                        case 'p':
+                        {
+                            $state.go('homeUser');
+                            console.log('homeUser');
+                            break;
+                        }
+                        default:
+                        {
+                            console.log('sem tipo de usuário definido');
+                            $state.go('chooseUserType');
+                        }
+                    }
+
+                    // após passar pelo formulário de tipo de usuário, persiste no Firebase
+                    var userLogged = fireBaseData.ref().auth().currentUser;
+                    console.log('usuário...');
+                    console.log(fireBaseData.ref().auth())
+                    fireBaseData.refUser().child(userLogged.uid).set({
+                        type: userType
+                    });
+                }
+            }
 
         })
 
