@@ -14,9 +14,8 @@ angular.module('app.controllers', [])
 
             //Check if user already logged in
             firebase.auth().onAuthStateChanged(function (user) {
-                if (user) {
 
-                    console.log('Usuário do tipo: ' + user.type);
+                if (user) {
                     $ionicHistory.nextViewOptions({
                         historyRoot: true
                     });
@@ -24,43 +23,31 @@ angular.module('app.controllers', [])
                     $rootScope.extras = true;
                     sharedUtils.hideLoading();
 
-                    var userType = user.type != undefined ? user.type : 'undefined';
-                    userType = userType.toLocaleLowerCase();
+                    fireBaseData.refUser().child(user.uid).once('value', function (snapshot) {
+                        var usertypeLogged = snapshot.child('type').val();
+                        usertypeLogged = usertypeLogged !== null ? usertypeLogged.toLowerCase() : undefined;
+                        console.log('Tipo LOGADO >> ' + usertypeLogged);
 
-                    switch (userType) {
-                        case 'v':
-                        { //vendedor
-                            $state.go('homeRestaurant');
-                            console.log('homeRestaurant');
-                            break;
+                        switch (usertypeLogged) {
+                            case 'v':
+                            { //vendedor
+                                console.log('homeRestaurant');
+                                $state.go('homeRestaurant');
+                                break;
+                            }
+                            case 'p':
+                            {
+                                console.log('homeUser');
+                                $state.go('homeUser');
+                                break;
+                            }
+                            default:
+                            {
+                                console.log('sem tipo de usuário definido');
+                                $state.go('chooseUserType');
+                            }
                         }
-                        case 'p':
-                        {
-                            $state.go('homeUser');
-                            console.log('homeUser');
-                            break;
-                        }
-                        default:
-                        {
-                            console.log('sem tipo de usuário definido');
-                            $state.go('chooseUserType');
-                        }
-                    }
-
-
-                    // primeiro login do usuário, então precisa definir o tipo de usuário (vendedor ou comprador)
-//                    if (user.type == undefined) {
-//                        console.log('entrou aqui');
-//                        $state.go('chooseUserType', {myVar: 'Hello Var'}, {localtion: "replace"});
-//                        $state.prop1 = 'prop1';
-//                        $scope.prop2 = 'prop2';
-//                        $rootScope.myFunc = function () {
-//                            console.log('Im my func')
-//                        };
-//                    } else {
-//                        $state.go('menu2', {}, {location: "replace"});
-//                    }
-
+                    });
                 }
             });
 
@@ -73,8 +60,6 @@ angular.module('app.controllers', [])
 
                     //Email
                     firebase.auth().signInWithEmailAndPassword(cred.email, cred.password).then(function (result) {
-
-                        //console.log(cred.email + " | " + cred.password);
 
                         // You dont need to save the users session as firebase handles it
                         // You only need to :
@@ -100,9 +85,6 @@ angular.module('app.controllers', [])
                 } else {
                     sharedUtils.showAlert("Please note", "Entered data is not valid");
                 }
-
-
-
             };
 
             $scope.loginFb = function () {
@@ -124,15 +106,41 @@ angular.module('app.controllers', [])
 
             //Check if user already logged in
             firebase.auth().onAuthStateChanged(function (user) {
+                console.log('singupCtrl sem usuário');
                 if (user) {
-
+                    console.log('singupCtrl com usuário');
                     $ionicHistory.nextViewOptions({
                         historyRoot: true
                     });
                     $ionicSideMenuDelegate.canDragContent(true);  // Sets up the sideMenu dragable
                     $rootScope.extras = true;
                     sharedUtils.hideLoading();
-                    $state.go('menu2', {myProfile: 'controller signupCtrl'}, {location: "replace"}); // Zima - Aqui é pra onde vai depois do login
+
+
+                    fireBaseData.refUser().child(user.uid).once('value', function (snapshot) {
+                        var usertypeLogged = snapshot.child('type').val();
+                        usertypeLogged = usertypeLogged.toLocaleLowerCase();
+
+                        switch (usertypeLogged) {
+                            case 'v':
+                            { //vendedor
+                                console.log('homeRestaurant');
+                                $state.go('homeRestaurant');
+                                break;
+                            }
+                            case 'p':
+                            {
+                                console.log('homeUser');
+                                $state.go('homeUser');
+                                break;
+                            }
+                            default:
+                            {
+                                console.log('sem tipo de usuário definido');
+                                $state.go('chooseUserType');
+                            }
+                        }
+                    });
 
                 }
             });
@@ -153,7 +161,7 @@ angular.module('app.controllers', [])
                         //Add name and default dp to the Autherisation table
                         result.updateProfile({
                             displayName: cred.name,
-                            photoURL: "default_dp"
+                            photoURL: "img/dj.svg"
                         }).then(function () {}, function (error) {});
 
                         //Add phone number to the user table
@@ -683,45 +691,54 @@ angular.module('app.controllers', [])
         .controller('userTypeCtrl', function ($scope, $rootScope, $state, sharedUtils, fireBaseData) {
 
             firebase.auth().onAuthStateChanged(function (userLogged) {
-                
+
             });
 
             $scope.goHome = function (user) {
-                if (user.type == undefined) {
+                if (user == undefined) {
                     sharedUtils.showAlert("Atenção", "Escolha uma opção: vendedor ou comprador");
                 } else {
-                    var userType = user.type != undefined ? user.type : 'undefined';
+                    var userType = user.type !== undefined ? user.type : undefined;
                     userType = userType.toLocaleLowerCase();
 
                     switch (userType) {
                         case 'v':
                         { //vendedor
+                            $state.usertype = 'V';
                             $state.go('homeRestaurant');
-                            console.log('homeRestaurant');
                             break;
                         }
                         case 'p':
                         {
+                            $state.usertype = 'P';
                             $state.go('homeUser');
-                            console.log('homeUser');
                             break;
                         }
-                        default:
-                        {
-                            console.log('sem tipo de usuário definido');
-                            $state.go('chooseUserType');
-                        }
                     }
-
-                    // após passar pelo formulário de tipo de usuário, persiste no Firebase
-                    var userLogged = fireBaseData.ref().auth().currentUser;
-                    console.log('usuário...');
-                    console.log(fireBaseData.ref().auth())
-                    fireBaseData.refUser().child(userLogged.uid).set({
-                        type: userType
-                    });
                 }
             }
+
+        })
+
+        .controller('homeCtrl', function ($scope, $rootScope, $state, sharedUtils, fireBaseData, $firebaseArray) {
+
+            firebase.auth().onAuthStateChanged(function (user) {
+                var usertype = $state.usertype == undefined ? 'não setado' : $state.usertype;
+                var usertypeLogged = undefined;
+
+                fireBaseData.refUser().child(user.uid).once('value', function (snapshot) {
+                    usertypeLogged = snapshot.child('type').val();
+
+                    if (usertypeLogged) {
+                        console.log('Usuário já tem tipo = ' + usertypeLogged);
+                    } else {
+                        console.log('Update usertype >> ' + usertype);
+                        fireBaseData.refUser().child(user.uid).update({type: usertype});
+                    }
+                });
+
+
+            });
 
         })
 

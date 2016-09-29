@@ -1,12 +1,12 @@
-<ion-view style="" class=" " id="page6" title="Signup">
+<ion-view style="" class=" " id="page6" title="Criar conta">
     <ion-content class="has-header" padding="true" style="background: url(img/bg1.jpg) center; background-size: cover;">
         <form name="signupForm" class="list " id="signup-form2">
 
             <!--<label class="item item-input item-floating-label">-->
 
             <div ng-init="user.type='P'">
-                <ion-radio style="color: #ffffff;" ng-model="user.type" ng-value="'V'" >Quero vender comida online (sou um restaurante)</ion-radio>
-                <ion-radio style="color: #ffffff;" ng-model="user.type" ng-value="'P'" checked>Quero pedir comida online (sou um consumidor)</ion-radio>
+                <ion-radio style="color: #F29494;" ng-model="user.type" ng-value="'V'" >Quero vender comida online (sou um restaurante)</ion-radio>
+                <ion-radio style="color: #F29494;" ng-model="user.type" ng-value="'P'" checked>Quero pedir comida online (sou um consumidor)</ion-radio>
             </div>
             <!--</label>-->
 
@@ -36,7 +36,7 @@
             </ion-list>
             <div style="width: 279px; height: 35px;" class="spacer"></div>
             <button ng-click="signupEmail(signupForm, user)" class=" button button-assertive  button-block  icon-left ion-ios-email-outline " style="border-radius:0px 0px 0px 0px;" id="signup-button3">CRIAR CONTA BIG FOOD</button>
-            <button ng-click="singupFacebook()" class=" button button-positive  button-block icon-left ion-social-facebook " style="border-radius:0px 0px 0px 0px;" id="signup-button4">ENTRAR COM FACEBOOK</button>
+            <!--<button ng-click="singupFacebook()" class=" button button-positive  button-block icon-left ion-social-facebook " style="border-radius:0px 0px 0px 0px;" id="signup-button4">ENTRAR COM FACEBOOK</button>-->
         </form>
     </ion-content>
 </ion-view>

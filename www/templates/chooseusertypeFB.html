@@ -2,6 +2,11 @@
     <ion-content class="has-header" padding="true" style="background: url(img/bg1.jpg) center; background-size: cover;">
 
         <div>
+            <label class="item item-input item-floating-label">
+                <span style="color: #9F9F9F;" class="input-label">Telefone</span>
+                <input style="color: #ffffff;" ng-model="user.phone" type="tel" placeholder="Telefone">
+            </label>
+
             <ion-radio style="color: #F29494;" ng-model="user.type" ng-value="'V'" >Quero vender comida online (sou um restaurante)</ion-radio>
             <ion-radio style="color: #F29494;" ng-model="user.type" ng-value="'P'" checked>Quero pedir comida online (sou um consumidor)</ion-radio>
         </div>
